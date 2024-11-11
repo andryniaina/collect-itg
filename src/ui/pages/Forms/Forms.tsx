@@ -233,7 +233,7 @@ function Forms() {
       {/* Second Modal */}
       {isSecondModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center overflow-auto bg-gray-900 bg-opacity-50">
-          <div className="relative w-full max-w-lg p-6 mx-4 bg-white rounded-lg shadow-lg">
+          <div className="relative w-full max-w-xl p-8 mx-4 bg-white rounded-lg shadow-lg ">
             {/* Close button for second modal */}
             <button
               className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"

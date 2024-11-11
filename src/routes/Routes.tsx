@@ -17,7 +17,7 @@ const MainRoutes = () => {
         <Route path="/" element={<Navigate to="/dashboard" />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/agents" element={<Agents />} />
-        <Route path="/datas" element={<Datas />} />
+        <Route path="/data" element={<Datas />} />
         <Route path="/forms" element={<Forms />} />
         <Route path="/forms/create" element={<FormBuilder />} />
         <Route path="/projects" element={<Projects />} />

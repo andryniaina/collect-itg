@@ -54,10 +54,7 @@ const submissionsColumns: GridColDef[] = [
     headerName: "Nombre de soumissions",
     width: 215,
   },
-  {field: "progress",
-    headerName: "Progression (%)",
-    width: 215,
-  }
+  { field: "progress", headerName: "Progression (%)", width: 215 },
 ];
 
 const submissionRows = [
@@ -68,7 +65,7 @@ const submissionRows = [
     status: "Brouillon",
     submissions: 0,
     target: 100,
-    progress: 0
+    progress: 0,
   },
   {
     id: "B",
@@ -77,7 +74,7 @@ const submissionRows = [
     status: "Brouillon",
     submissions: 0,
     target: 100,
-    progress: 0
+    progress: 0,
   },
   {
     id: "C",
@@ -86,7 +83,7 @@ const submissionRows = [
     status: "Brouillon",
     submissions: 0,
     target: 100,
-    progress: 0
+    progress: 0,
   },
 ];
 
@@ -97,7 +94,7 @@ const rows = [
     lastUpdated: "10/09/2024",
     status: "Brouillon",
     deploymentDate: "02/09/2024",
-    submissions: "0/100"
+    submissions: "0/100",
   },
   {
     id: "B",
@@ -105,7 +102,7 @@ const rows = [
     lastUpdated: "10/09/2024",
     status: "Brouillon",
     deploymentDate: "02/09/2024",
-    submissions: "0/100"
+    submissions: "0/100",
   },
   {
     id: "C",
@@ -113,10 +110,9 @@ const rows = [
     lastUpdated: "10/09/2024",
     status: "Fermé",
     deploymentDate: "02/09/2024",
-    submissions: "0/100"
+    submissions: "0/100",
   },
 ];
-
 
 const paginationModel = { page: 0, pageSize: 5 };
 
@@ -382,7 +378,7 @@ pour optimiser les ressources en eau."
             <span className="text-3xl font-semibold">0</span>
           </div>
           <div>
-          <Paper sx={{ height: 400, width: "100%" }}>
+            <Paper sx={{ height: 400, width: "100%" }}>
               <DataGrid
                 rows={submissionRows}
                 columns={submissionsColumns}
