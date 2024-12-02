@@ -5,3 +5,4 @@ export { default as Forms } from "./Forms/Forms";
 export { default as Projects } from "./Projects/Projects";
 export { default as ProjectDetails } from "./Projects/ProjectDetails/ProjectDetails";
 export { default as FormBuilder} from "./Forms/FormBuilder/FormBuilder";
+export { default as Results } from "./Datas/Results/Results";
