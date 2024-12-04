@@ -8,6 +8,7 @@ import { PieChart } from "@mui/x-charts/PieChart";
 import { LineChart } from "@mui/x-charts/LineChart";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import Paper from "@mui/material/Paper";
+import { useUserProfile } from "../../../hooks/auth";
 const dataset = [
   { x: 1, y: 2 },
   { x: 2, y: 5.5 },
@@ -65,7 +66,7 @@ const rows = [
     advancement: "30%",
   },
   {
-    id: "1",
+    id: "2",
     name: "Projet 01",
     region: "Sud",
     echeance: "01/08/2024",
@@ -75,7 +76,7 @@ const rows = [
     advancement: "30%",
   },
   {
-    id: "1",
+    id: "3",
     name: "Projet 01",
     region: "Sud",
     echeance: "01/08/2024",
@@ -85,7 +86,7 @@ const rows = [
     advancement: "30%",
   },
   {
-    id: "1",
+    id: "4",
     name: "Projet 01",
     region: "Sud",
     echeance: "01/08/2024",
@@ -98,6 +99,7 @@ const rows = [
 
 const paginationModel = { page: 0, pageSize: 5 };
 function Dashboard() {
+  const { data: userProfile } = useUserProfile();
   return (
     <div>
       <div className="flex flex-row justify-between items-center mb-24">
@@ -123,7 +125,7 @@ function Dashboard() {
           <img src={Notif} alt="Notification" className="h-5 w-5" />
           <div className="flex flex-row items-center gap-2">
             <img src={Avatar} alt="Avatar" className="h-3 w-3" />
-            <span>Richard</span>
+            <span>{userProfile?.name}</span>
           </div>
         </div>
       </div>

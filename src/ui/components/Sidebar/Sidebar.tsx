@@ -1,12 +1,12 @@
 import { Link } from "react-router-dom";
-import Logo from "../../assets/icons/Logo.png";
-import IconProjet from "../../assets/icons/IconProjet.svg";
-import IconParams from "../../assets/icons/IconeParams.svg";
-import IconLogout from "../../assets/icons/IconLogout.svg";
-import IconeRapport from "../../assets/icons/IconeRapport.svg";
-import IconDashboard from "../../assets/icons/IconDashboard.svg"
-import IconCreationFormulaire from "../../assets/icons/IconCreationFormulaire.svg"
-import IconAgents from "../../assets/icons/IconAgents.svg"
+import Logo from "../../../assets/icons/Logo.png";
+import IconProjet from "../../../assets/icons/IconProjet.svg";
+import IconParams from "../../../assets/icons/IconeParams.svg";
+import IconLogout from "../../../assets/icons/IconLogout.svg";
+import IconeRapport from "../../../assets/icons/IconeRapport.svg";
+import IconDashboard from "../../../assets/icons/IconDashboard.svg"
+import IconCreationFormulaire from "../../../assets/icons/IconCreationFormulaire.svg"
+import IconAgents from "../../../assets/icons/IconAgents.svg"
 
 const Sidebar = () => {
   return (

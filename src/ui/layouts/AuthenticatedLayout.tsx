@@ -1,15 +1,19 @@
-import { Outlet } from "react-router-dom";
-import Sidebar from "../../components/Sidebar/Sidebar";
+import { Navigate, Outlet } from "react-router-dom";
+import Sidebar from "../components/Sidebar/Sidebar";
 import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useAuth } from "../../services/AuthContext";
 
 const AuthenticatedLayout = () => {
   let location = useLocation();
   const [showSidebar, setShowSidebar] = useState(true);
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     setShowSidebar(location.pathname !== "/forms/create");
   }, [location]);
+
+  if (!isAuthenticated) return <Navigate to="/login" />;
 
   return (
     <>
