@@ -12,6 +12,7 @@ import Paper from "@mui/material/Paper";
 import FormCreateButton from "../../../assets/icons/FormCreateButton.svg";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useForms } from "../../../hooks/forms";
 
 const columns: GridColDef[] = [
   { field: "name", headerName: "Nom du formulaire", width: 190 },
@@ -59,6 +60,7 @@ const rows = [
 const paginationModel = { page: 0, pageSize: 5 };
 
 function Forms() {
+  const { data: forms } = useForms();
   const navigate = useNavigate();
 
   // State to control the visibility of the first modal

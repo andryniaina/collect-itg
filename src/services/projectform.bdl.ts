@@ -13,6 +13,7 @@ export const postProjectForm = async (formData: any) => {
 export const getProjectForm = async () => {
   try {
     const response = await axios.get(`project`);
+    console.log("Projects =>",response.data);
     return response.data;
   } catch (error) {
     console.error(error);

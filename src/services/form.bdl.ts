@@ -12,7 +12,7 @@ export const postForm = async (formData: any) => {
 export const getForms = async () => {
   try {
     const response = await axios.get("forms");
-    console.log(response);
+    console.log('Forms =>',response.data);
     return response.data;
   } catch (error) {
     console.error(error) ;

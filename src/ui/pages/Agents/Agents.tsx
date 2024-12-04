@@ -11,6 +11,7 @@ import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import Paper from "@mui/material/Paper";
 import IconNewProject from "../../../assets/icons/IconNewProject.svg";
 import { useState } from "react";
+import { useAgents } from "../../../hooks/agents";
 
 const columns: GridColDef[] = [
   { field: "name", headerName: "Nom de l'agent", width: 150 },
@@ -50,7 +51,7 @@ const rows = [
     completion: "30%",
   },
   {
-    id: "1",
+    id: "2",
     name: "RAKOTO Richard",
     role: "Enqueteur",
     group: "01/08/2024",
@@ -60,7 +61,7 @@ const rows = [
     completion: "30%",
   },
   {
-    id: "1",
+    id: "3",
     name: "RAKOTO Richard",
     role: "Enqueteur",
     group: "01/08/2024",
@@ -70,7 +71,7 @@ const rows = [
     completion: "30%",
   },
   {
-    id: "1",
+    id: "4",
     name: "RAKOTO Richard",
     role: "Enqueteur",
     group: "01/08/2024",
@@ -80,7 +81,7 @@ const rows = [
     completion: "30%",
   },
   {
-    id: "1",
+    id: "5",
     name: "RAKOTO Richard",
     role: "Enqueteur",
     group: "01/08/2024",
@@ -101,6 +102,7 @@ const localizedTextsMap = {
 const paginationModel = { page: 0, pageSize: 5 };
 
 function Agents() {
+  const { data: agents } = useAgents();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleOpenModal = () => {

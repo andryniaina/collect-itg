@@ -10,6 +10,7 @@ import IconeArchiver from "../../../assets/icons/IconeArchiver.svg";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import Paper from "@mui/material/Paper";
 import IconNewProject from "../../../assets/icons/IconNewProject.svg"
+import { useProjects } from "../../../hooks/projects";
 
 const columns: GridColDef[] = [
   { field: "name", headerName: "Nom du projet", width: 150 },
@@ -91,6 +92,7 @@ const localizedTextsMap = {
 const paginationModel = { page: 0, pageSize: 5 };
 
 function Projects() {
+  const { data: projects } = useProjects();
   return (
     <main>
       <div className="flex flex-row justify-between items-center mb-36">

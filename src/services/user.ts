@@ -37,7 +37,9 @@ export const getMe = async () => {
 
 export const getUsers = async () => {
   try {
-    return await axiosInstance.get("/users");
+    const response = await axiosInstance.get("/users");
+    console.log("Users =>",response.data);
+    return response.data;
   } catch (error) {
     throw error;
   }
