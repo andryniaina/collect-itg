@@ -1,9 +1,28 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { register } from "../../../services/user";
 
 export default function Register() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const navigate = useNavigate();
+
+  const registerUser = async () => {
+    try {
+      const response = await register(name, email, phone, password);
+      console.log(response);
+      navigate("/login");
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -57,7 +76,7 @@ export default function Register() {
           {/* Right Column - Form */}
           <div className="lg:w-1/2 mt-8 lg:mt-0">
             <h1 className="text-2xl font-semibold text-gray-800 mb-6">Créer un compte</h1>
-            <form className="space-y-4">
+            <div className="space-y-4">
               {/* Full Name */}
               <div>
                 <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-1">
@@ -68,6 +87,8 @@ export default function Register() {
                   id="fullName"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Rakoto Nirina"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
                 />
               </div>
 
@@ -81,6 +102,9 @@ export default function Register() {
                   id="email"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="rakotonirina@gmail.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  autoComplete='username'
                 />
               </div>
 
@@ -93,7 +117,9 @@ export default function Register() {
                   type="tel"
                   id="phone"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="rakotonirina@gmail.com"
+                  placeholder="+261"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
                 />
               </div>
 
@@ -108,6 +134,9 @@ export default function Register() {
                     id="password"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    autoComplete='new-password'
                   />
                   <button
                     type="button"
@@ -131,6 +160,9 @@ export default function Register() {
                     id="confirmPassword"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="••••••••"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    autoComplete='new-password'
                   />
                   <button
                     type="button"
@@ -147,6 +179,7 @@ export default function Register() {
               <button
                 type="submit"
                 className="w-full bg-gray-700 text-white py-2 px-4 rounded-md hover:bg-gray-800 transition-colors"
+                onClick={registerUser}
               >
                 Créer un compte
               </button>
@@ -159,7 +192,7 @@ export default function Register() {
                 </Link>
                 .
               </p>
-            </form>
+            </div>
           </div>
         </div>
       </div>

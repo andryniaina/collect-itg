@@ -25,10 +25,31 @@ export const login = async (
   }
 };
 
+export const register = async (
+  name: string,
+  email: string,
+  phone: string,
+  password: string
+) => {
+  let data = {
+    name: name,
+    email: email,
+    phoneNumber: phone,
+    password: password,
+  }
+  console.log("Register payload",data)
+  try {
+    const response = await axiosInstance.post("/auth/register", data);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const getMe = async () => {
   try {
     const response = await axiosInstance.get("/auth/profile");
-    console.log("Me =>",response.data);
+    console.log("Me =>", response.data);
     return response.data;
   } catch (error) {
     throw error;
@@ -38,7 +59,7 @@ export const getMe = async () => {
 export const getUsers = async () => {
   try {
     const response = await axiosInstance.get("/users");
-    console.log("Users =>",response.data);
+    console.log("Users =>", response.data);
     return response.data;
   } catch (error) {
     throw error;
@@ -65,14 +86,14 @@ export const createUserGroup = async (payload: any) => {
 export const getGroups = async () => {
   try {
     const { data } = await axiosInstance.get("/users/group");
-    const groups = data.map((group:any)=>{
-      group["members"] = group.users.map((user:any)=>user.name).join(",")
-      if(group.users.length<=0) {
-        group["members"]="Empty";
+    const groups = data.map((group: any) => {
+      group["members"] = group.users.map((user: any) => user.name).join(",");
+      if (group.users.length <= 0) {
+        group["members"] = "Empty";
       }
-      return group
-    })
-    console.log("groups",groups)
+      return group;
+    });
+    console.log("groups", groups);
     return groups;
   } catch (error) {
     throw error;

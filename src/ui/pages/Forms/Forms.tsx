@@ -10,9 +10,14 @@ import IconeArchiver from "../../../assets/icons/IconeArchiver.svg";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import Paper from "@mui/material/Paper";
 import FormCreateButton from "../../../assets/icons/FormCreateButton.svg";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForms } from "../../../hooks/forms";
+import { useUserProfile } from "../../../hooks/auth";
+import IconeUpload from "../../../assets/icons/IconeUpload.svg";
+import { CreateFormDto } from "../../../data/dtos/create-form.dto";
+import { createForm } from "../../../services/form";
+import { IForm } from "../../../data/interfaces/form.interface";
 
 const columns: GridColDef[] = [
   { field: "name", headerName: "Nom du formulaire", width: 190 },
@@ -30,38 +35,46 @@ const columns: GridColDef[] = [
   },
 ];
 
-const rows = [
-  {
-    id: "A",
-    name: "Formulaire A",
-    lastUpdated: "10/09/2024",
-    status: "Brouillon",
-    deploymentDate: "02/09/2024",
-    submissions: "0/100",
-  },
-  {
-    id: "B",
-    name: "Formulaire B",
-    lastUpdated: "10/09/2024",
-    status: "Brouillon",
-    deploymentDate: "02/09/2024",
-    submissions: "0/100",
-  },
-  {
-    id: "C",
-    name: "Formulaire C",
-    lastUpdated: "10/09/2024",
-    status: "Fermé",
-    deploymentDate: "02/09/2024",
-    submissions: "0/100",
-  },
-];
+interface FormRow {
+  id: string;
+  name: string;
+  lastUpdated: string;
+  status: string;
+  deploymentDate: string;
+  submissions: string;
+}
 
 const paginationModel = { page: 0, pageSize: 5 };
 
 function Forms() {
+  const { data: userProfile } = useUserProfile();
   const { data: forms } = useForms();
   const navigate = useNavigate();
+
+  const [rows, setRows] = useState<FormRow[]>([]);
+
+  useEffect(() => {
+    const newRows: FormRow[] = forms ? forms?.map((form: IForm) => ({
+      id: form._id,
+      name: form.name,
+      lastUpdated: form.updatedAt,
+      status: form.status,
+      deploymentDate: form.createdAt,
+      submissions: "0/100",
+    })) : [];
+    setRows(newRows);
+  }, [forms]);
+
+  const [form, setForm] = useState<CreateFormDto>({
+    name: "",
+    description: "",
+    version: "1",
+    section: "",
+    type: "",
+    country: "",
+    header: "",
+    logo: "",
+  });
 
   // State to control the visibility of the first modal
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -98,6 +111,10 @@ function Forms() {
     setActiveTab(index);
   };
 
+  const handleSubmit = async () => {
+    await createForm(form);
+  };
+
   return (
     <main>
       <div className="flex flex-row justify-between items-center mb-36">
@@ -123,7 +140,7 @@ function Forms() {
           <img src={Notif} alt="Notification" className="h-5 w-5" />
           <div className="flex flex-row items-center gap-2">
             <img src={Avatar} alt="Avatar" className="h-3 w-3" />
-            <span>Richard</span>
+            <span>{userProfile?.name}</span>
           </div>
         </div>
       </div>
@@ -277,19 +294,9 @@ function Forms() {
                     type="text"
                     className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
                     placeholder="Enquête agricole"
+                    value={form.header}
+                    onChange={(e) => setForm({...form, header: e.target.value})}
                   />
-                </div>
-
-                {/* Number of questions */}
-                <div className="mb-4">
-                  <label className="block mb-2 text-gray-700">
-                    Nombre de questions:
-                  </label>
-                  <select className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500">
-                    <option>05</option>
-                    <option>10</option>
-                    <option>15</option>
-                  </select>
                 </div>
 
                 {/* Logo upload */}
@@ -297,20 +304,7 @@ function Forms() {
                   <label className="block mb-2 text-gray-700">Logo:</label>
                   <div className="w-full p-4 border-2 border-dashed rounded-md cursor-pointer hover:shadow-md">
                     <div className="flex flex-col items-center">
-                      <svg
-                        className="w-10 h-10 mb-2 text-gray-400"
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                      >
-                        <path
-                          d="M16 16v6H8v-6m-2-8l-4 4m0 0l4 4m-4-4h10"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                        />
-                      </svg>
+                      <img src={IconeUpload} alt="Upload" className="w-5 h-5" />
                       <p className="text-gray-400">
                         Glissez et déposez votre fichier ici
                       </p>
@@ -323,13 +317,11 @@ function Forms() {
 
                 {/* Cancel and Create buttons */}
                 <div className="flex justify-center mt-6 gap-7">
-                  <button className="px-4 py-2 mr-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 focus:outline-none">
-                    Annuler
+                  <button onClick={()=>toggleTab(0)} className="px-4 py-2 mr-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 focus:outline-none">
+                    Précédent
                   </button>
                   <button
-                    onClick={() => {
-                      navigate("/forms/create");
-                    }}
+                    onClick={handleSubmit}
                     className="px-4 py-2 text-white bg-gray-800 rounded-md hover:bg-gray-900 focus:outline-none"
                   >
                     Créer
@@ -349,6 +341,8 @@ function Forms() {
                     type="text"
                     className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
                     placeholder="Formulaire A"
+                    value={form.name}
+                    onChange={(e) => setForm({...form, name: e.target.value})}
                   />
                 </div>
 
@@ -360,6 +354,8 @@ function Forms() {
                   <textarea
                     className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
                     placeholder=""
+                    value={form.description}
+                    onChange={(e) => setForm({...form, description: e.target.value})}
                   ></textarea>
                 </div>
 
@@ -368,7 +364,9 @@ function Forms() {
                   <label className="block mb-2 text-gray-700">
                     Section: <span className="text-red-500">*</span>
                   </label>
-                  <select className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500">
+                  <select className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+                  value={form.section}
+                  onChange={(e) => setForm({...form, section: e.target.value})}>  
                     <option>Santé</option>
                     <option>Agriculture</option>
                     <option>Éducation</option>
@@ -381,7 +379,10 @@ function Forms() {
                     Types de formulaires:{" "}
                     <span className="text-red-500">*</span>
                   </label>
-                  <select className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500">
+                  <select className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+                  value={form.type}
+                  onChange={(e) => setForm({...form, type: e.target.value})}
+                  >
                     <option>Formulaire d'Enquête</option>
                     <option>Formulaire d'Étude</option>
                     <option>Formulaire de Recherche</option>
@@ -393,7 +394,10 @@ function Forms() {
                   <label className="block mb-2 text-gray-700">
                     Pays: <span className="text-red-500">*</span>
                   </label>
-                  <select className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500">
+                  <select className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+                  value={form.country}
+                  onChange={(e) => setForm({...form, country: e.target.value})}
+                  >
                     <option>Madagascar</option>
                     <option>France</option>
                     <option>États-Unis</option>
@@ -402,10 +406,10 @@ function Forms() {
 
                 {/* Cancel and Next buttons */}
                 <div className="flex justify-center mt-6 gap-7">
-                  <button className="px-4 py-2 mr-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 focus:outline-none">
+                  <button onClick={handleCloseSecondModal} className="px-4 py-2 mr-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 focus:outline-none">
                     Annuler
                   </button>
-                  <button className="px-4 py-2 text-white bg-gray-800 rounded-md hover:bg-gray-900 focus:outline-none">
+                  <button onClick={()=>toggleTab(1)} className="px-4 py-2 text-white bg-gray-800 rounded-md hover:bg-gray-900 focus:outline-none">
                     Suivant
                   </button>
                 </div>

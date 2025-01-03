@@ -4,9 +4,11 @@ import IconRecherche from "../../../assets/icons/IconRecherche.svg";
 import Filter from "../../../assets/icons/Filter.svg";
 import IconClosed from "../../../assets/icons/IconClosed.svg";
 import { useState } from "react";
+import { useUserProfile } from "../../../hooks/auth";
 
 function Datas() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { data: userProfile } = useUserProfile();
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -41,7 +43,7 @@ function Datas() {
           <img src={Notif} alt="Notification" className="h-5 w-5" />
           <div className="flex flex-row items-center gap-2">
             <img src={Avatar} alt="Avatar" className="h-3 w-3" />
-            <span>Richard</span>
+            <span>{userProfile?.name}</span>
           </div>
         </div>
       </div>

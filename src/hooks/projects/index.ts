@@ -1,6 +1,6 @@
-import { getProjectForm } from "../../services/projectform.bdl";
+import { getProject } from "../../services/project";
 import { useQuery} from "@tanstack/react-query";
 
 export const useProjects = () => {
-  return useQuery({queryKey: ["projectForm"], queryFn: getProjectForm});
+  return useQuery({queryKey: ["projects"], queryFn: getProject});
 };

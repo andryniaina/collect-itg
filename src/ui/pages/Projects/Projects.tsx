@@ -9,8 +9,14 @@ import IconeFermer from "../../../assets/icons/IconeFermer.svg";
 import IconeArchiver from "../../../assets/icons/IconeArchiver.svg";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import Paper from "@mui/material/Paper";
-import IconNewProject from "../../../assets/icons/IconNewProject.svg"
+import IconNewProject from "../../../assets/icons/IconNewProject.svg";
 import { useProjects } from "../../../hooks/projects";
+import { useUserProfile } from "../../../hooks/auth";
+import { useEffect, useState } from "react";
+import { createProject } from "../../../services/project";
+import { CreateProjectDto } from "../../../data/dtos/create-project.dto";
+import { IProject } from "../../../data/interfaces/project.interface";
+import { useQueryClient } from "@tanstack/react-query";
 
 const columns: GridColDef[] = [
   { field: "name", headerName: "Nom du projet", width: 150 },
@@ -34,65 +40,87 @@ const columns: GridColDef[] = [
   {
     field: "advancement",
     headerName: "Taux d'avancement",
-    width: 160
-  }
-];
-
-const rows = [
-  {
-    id: "1",
-    name: "Projet 01",
-    region: "Sud",
-    echeance: "01/08/2024",
-    status: "En cours",
-    agentsNumber: 5,
-    forms: 10,
-    advancement: "30%"
+    width: 160,
   },
-  {
-    id: "2",
-    name: "Projet 01",
-    region: "Sud",
-    echeance: "01/08/2024",
-    status: "En cours",
-    agentsNumber: 5,
-    forms: 10,
-    advancement: "30%"
-  },
-  {
-    id: "3",
-    name: "Projet 01",
-    region: "Sud",
-    echeance: "01/08/2024",
-    status: "En cours",
-    agentsNumber: 5,
-    forms: 10,
-    advancement: "30%"
-  },
-  {
-    id: "4",
-    name: "Projet 01",
-    region: "Sud",
-    echeance: "01/08/2024",
-    status: "En cours",
-    agentsNumber: 5,
-    forms: 10,
-    advancement: "30%"
-  }
 ];
 
 const localizedTextsMap = {
-  footerRowSelected: (count:number) =>
+  footerRowSelected: (count: number) =>
     count !== 1
       ? `${count.toLocaleString()} lignes sélectionnées`
       : `${count.toLocaleString()} ligne sélectionnée`,
 };
 
-
 const paginationModel = { page: 0, pageSize: 5 };
+
+interface ProjectRow {
+  id: string;
+  name: string;
+  region: string;
+  echeance: string;
+  status: string;
+  agentsNumber: number;
+  forms: number;
+  advancement: string;
+}
 
 function Projects() {
   const { data: projects } = useProjects();
+  const { data: userProfile } = useUserProfile();
+  const queryClient = useQueryClient();
+
+  const [rows, setRows] = useState<ProjectRow[]>([
+  ]);
+
+  useEffect(() => {
+    const newRows:ProjectRow[] = projects ? projects?.map((project:IProject)=>
+    {
+      return {
+        id: project._id,
+        name: project.name,
+        region: project.region,
+        echeance: project.endDate,
+        status: project.status,
+        agentsNumber: project.agents.length,
+        forms: project.forms.length,
+        advancement: "30%",
+      }
+    }) : [];
+    setRows(newRows);
+  }, [projects]);
+
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("base"); // "base" or "advanced"
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+
+  const [project, setProject] = useState<CreateProjectDto>({
+    name: "",
+    description: "",
+    endDate: "",
+    agents: [],
+    forms: [],
+    responsable: "",
+    region: "",
+    priority: "",
+    section: "",
+  });
+
+  const handleChange = (e: any) => {
+    setProject({
+      ...project,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = async () => {
+    await createProject(project);
+    closeModal();
+    queryClient.invalidateQueries({queryKey:["projects"]});
+  };
+
   return (
     <main>
       <div className="flex flex-row justify-between items-center mb-36">
@@ -118,7 +146,7 @@ function Projects() {
           <img src={Notif} alt="Notification" className="h-5 w-5" />
           <div className="flex flex-row items-center gap-2">
             <img src={Avatar} alt="Avatar" className="h-3 w-3" />
-            <span>Richard</span>
+            <span>{userProfile?.name}</span>
           </div>
         </div>
       </div>
@@ -126,12 +154,10 @@ function Projects() {
         <div className="flex flex-row justify-between items-center">
           <div className="flex gap-6">
             <div className="flex items-center cursor-pointer bg-gray-700 p-2 gap-1 rounded">
-              <img
-                src={IconNewProject}
-                alt="Create form"
-                className="w-5 h-5"
-              />
-              <span className="text-white text-sm">Nouveau projet</span>
+              <img src={IconNewProject} alt="Create form" className="w-5 h-5" />
+              <span className="text-white text-sm" onClick={openModal}>
+                Nouveau projet
+              </span>
             </div>
             <div className="flex gap-4">
               <div className="flex items-center gap-1">
@@ -164,6 +190,170 @@ function Projects() {
             />
           </Paper>
         </div>
+        {isModalOpen && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+            <div className="bg-white rounded-lg shadow-lg w-96">
+              {/* Modal Header */}
+              <div className="flex justify-between items-center px-6 py-4 border-b">
+                <h2 className="text-lg font-semibold">Nouveau projet</h2>
+                <button
+                  onClick={closeModal}
+                  className="text-gray-600 hover:text-gray-900"
+                >
+                  &times;
+                </button>
+              </div>
+
+              {/* Modal Tabs */}
+              <div className="flex border-b">
+                <button
+                  onClick={() => setActiveTab("base")}
+                  className={`flex-1 px-4 py-2 text-center ${
+                    activeTab === "base"
+                      ? "border-b-2 border-blue-600 font-semibold"
+                      : "text-gray-600"
+                  }`}
+                >
+                  Informations de base
+                </button>
+                <button
+                  onClick={() => setActiveTab("advanced")}
+                  className={`flex-1 px-4 py-2 text-center ${
+                    activeTab === "advanced"
+                      ? "border-b-2 border-blue-600 font-semibold"
+                      : "text-gray-600"
+                  }`}
+                >
+                  Options avancées
+                </button>
+              </div>
+
+              {/* Modal Content */}
+              <div className="p-6">
+                {activeTab === "base" ? (
+                  <form className="space-y-4">
+                    {/* Fields for "Informations de base" */}
+                    <div>
+                      <label className="block text-sm font-medium">
+                        Nom du projet <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        className="w-full mt-1 px-3 py-2 border rounded-md"
+                        onChange={handleChange}
+                        value={project.name}
+                        name="name"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium">
+                        Description <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        className="w-full mt-1 px-3 py-2 border rounded-md"
+                        onChange={handleChange}
+                        value={project.description}
+                        name="description"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium">
+                        Région <span className="text-red-500">*</span>
+                      </label>
+                      <select className="w-full mt-1 px-3 py-2 border rounded-md" onChange={handleChange} value={project.region} name="region">
+                        <option value="Sud">Sud</option>
+                        <option value="Nord">Nord</option>
+                        <option value="Est">Est</option>
+                        <option value="Ouest">Ouest</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium">
+                        Échéance <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="date"
+                        className="w-full mt-1 px-3 py-2 border rounded-md"
+                        onChange={handleChange}
+                        value={project.endDate}
+                        name="endDate"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium">
+                        Formulaires associés
+                      </label>
+                      <select className="w-full mt-1 px-3 py-2 border rounded-md" onChange={handleChange} value={project.forms} name="forms">
+                        
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium">
+                        Agents {/* <span className="text-red-500">*</span> */}
+                      </label>
+                      <select className="w-full mt-1 px-3 py-2 border rounded-md" onChange={handleChange} value={project.agents} name="agents">
+                        
+                      </select>
+                    </div>
+                  </form>
+                ) : (
+                  <form className="space-y-4">
+                    {/* Fields for "Options avancées" */}
+                    <div>
+                      <label className="block text-sm font-medium">
+                        Responsable
+                      </label>
+                      <input
+                        type="text"
+                        className="w-full mt-1 px-3 py-2 border rounded-md"
+                        onChange={handleChange}
+                        value={project.responsable}
+                        name="responsable"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium">
+                        Priorité
+                      </label>
+                      <select className="w-full mt-1 px-3 py-2 border rounded-md" onChange={handleChange} value={project.priority} name="priority">
+                        <option>Haute</option>
+                        <option>Moyenne</option>
+                        <option>Basse</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium">
+                        Section
+                      </label>
+                      <input
+                        type="text"
+                        className="w-full mt-1 px-3 py-2 border rounded-md"
+                        onChange={handleChange}
+                        value={project.section}
+                        name="section"
+                      />
+                    </div>
+                  </form>
+                )}
+              </div>
+
+              {/* Modal Footer */}
+              <div className="flex justify-end px-6 py-4 border-t">
+                <button
+                  onClick={closeModal}
+                  className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md mr-2 hover:bg-gray-400"
+                >
+                  Annuler
+                </button>
+                <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                onClick={handleSubmit}>
+                  Enregistrer
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </main>
   );

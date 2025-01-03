@@ -1,4 +1,4 @@
-import { getForms } from "../../services/form.bdl";
+import { getForms } from "../../services/form";
 import { useQuery} from "@tanstack/react-query";
 
 export const useForms = () => {

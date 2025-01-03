@@ -4,11 +4,20 @@ import IconProjet from "../../../assets/icons/IconProjet.svg";
 import IconParams from "../../../assets/icons/IconeParams.svg";
 import IconLogout from "../../../assets/icons/IconLogout.svg";
 import IconeRapport from "../../../assets/icons/IconeRapport.svg";
-import IconDashboard from "../../../assets/icons/IconDashboard.svg"
-import IconCreationFormulaire from "../../../assets/icons/IconCreationFormulaire.svg"
-import IconAgents from "../../../assets/icons/IconAgents.svg"
+import IconDashboard from "../../../assets/icons/IconDashboard.svg";
+import IconCreationFormulaire from "../../../assets/icons/IconCreationFormulaire.svg";
+import IconAgents from "../../../assets/icons/IconAgents.svg";
+import { useAuth } from "../../../services/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const Sidebar = () => {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  const logoutUser = () => {
+    logout();
+    navigate("/login");
+  };
   return (
     <div className="w-80 bg-gray-100 h-full flex flex-col">
       <div className="flex items-center justify-center mt-10 mb-5 gap-1">
@@ -40,7 +49,11 @@ const Sidebar = () => {
               to="/forms"
               className="flex items-center p-3 text-gray-700 hover:bg-gray-200 rounded-lg"
             >
-              <img src={IconCreationFormulaire} alt="Forms" className="h-5 w-5" />
+              <img
+                src={IconCreationFormulaire}
+                alt="Forms"
+                className="h-5 w-5"
+              />
               <span className="ml-4">Gestion de formulaires</span>
             </Link>
           </li>
@@ -72,13 +85,10 @@ const Sidebar = () => {
           <img src={IconParams} alt="Settings" className="h-5 w-5" />
           <span className="ml-4">Paramètres</span>
         </Link>
-        <Link
-          to="/logout"
-          className="flex items-center p-3 text-gray-700 hover:bg-gray-200 rounded-lg"
-        >
+        <div className="flex items-center p-3 text-gray-700 hover:bg-gray-200 rounded-lg" onClick={logoutUser}>
           <img src={IconLogout} alt="Logout" className="h-5 w-5" />
           <span className="ml-4">Déconnexion</span>
-        </Link>
+        </div>
       </div>
     </div>
   );

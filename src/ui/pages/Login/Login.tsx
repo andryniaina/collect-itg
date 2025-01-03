@@ -3,6 +3,7 @@ import { useState } from "react";
 import { login } from "../../../services/user";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../services/AuthContext";
+import { Link } from "react-router-dom";
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -17,6 +18,7 @@ function Login() {
 
   const onLogin = async () => {
     try {
+      console.log(email, password);
       const response = await login(email, password);
       console.log(response);
       setToken(response?.access_token);
@@ -76,7 +78,7 @@ function Login() {
             </div>
           </div>
           <span className="flex items-center justify-center text-gray-500">
-            Pas encore inscrit? Créer un compte
+            Pas encore inscrit?<Link to="/register"><span className="underline ml-2">Créer un compte</span></Link>
           </span>
         </div>
       </div>

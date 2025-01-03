@@ -12,6 +12,9 @@ import Paper from "@mui/material/Paper";
 import IconNewProject from "../../../assets/icons/IconNewProject.svg";
 import { useState } from "react";
 import { useAgents } from "../../../hooks/agents";
+import { useUserProfile } from "../../../hooks/auth";
+import { useProjects } from "../../../hooks/projects";
+import { IProject } from "../../../data/interfaces/project.interface";
 
 const columns: GridColDef[] = [
   { field: "name", headerName: "Nom de l'agent", width: 150 },
@@ -103,10 +106,17 @@ const paginationModel = { page: 0, pageSize: 5 };
 
 function Agents() {
   const { data: agents } = useAgents();
+  const {data: projects} = useProjects();
+  const { data: userProfile } = useUserProfile();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [customAuth, setCustomAuth] = useState(false);
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
   };
 
   return (
@@ -134,7 +144,7 @@ function Agents() {
           <img src={Notif} alt="Notification" className="h-5 w-5" />
           <div className="flex flex-row items-center gap-2">
             <img src={Avatar} alt="Avatar" className="h-3 w-3" />
-            <span>Richard</span>
+            <span>{userProfile?.name}</span>
           </div>
         </div>
       </div>
@@ -181,7 +191,9 @@ function Agents() {
           <div className="relative w-full max-w-xl p-6 pb-12 mx-4 h-4/5 bg-white rounded-lg shadow-lg">
             <div className="flex justify-between mb-12">
               <span className="font-semibold">Ajouter un agent</span>
-              <span>X</span>
+              <span className="hover:cursor-pointer" onClick={handleCloseModal}>
+                X
+              </span>
             </div>
 
             <div className="flex flex-col px-2 h-5/6 overflow-y-scroll">
@@ -210,9 +222,9 @@ function Agents() {
                   Projet(s) assigné(s) <span className="text-red-500">*</span>
                 </label>
                 <select className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500">
-                  <option>Projet 01</option>
-                  <option>Projet 02</option>
-                  <option>Projet 03</option>
+                  {projects?.map((project:IProject)=>
+                    <option key={project._id}>{project.name}</option>
+                  )}
                 </select>
               </div>
               <div className="mb-4">
@@ -235,110 +247,121 @@ function Agents() {
                 ></textarea>
               </div>
               <div className="flex items-center">
-                <input type="checkbox" className="mr-2 accent-black" />
+                <input
+                  type="checkbox"
+                  className="mr-2 accent-black"
+                  checked={customAuth}
+                  onChange={(e) => setCustomAuth(e.target.checked)}
+                />
                 <span className="text-sm">Personnaliser les permissions</span>
               </div>
-              <div className="pl-5">
-                <span className="text-sm">Permissions de formulaires</span>
-                <div className="flex flex-col pl-5">
-                  <div className="flex items-center">
-                    <input type="checkbox" className="mr-2" />
+              {customAuth && (
+                <>
+                  <div className="pl-5">
+                    <span className="text-sm">Permissions de formulaires</span>
+                    <div className="flex flex-col pl-5">
+                      <div className="flex items-center">
+                        <input type="checkbox" className="mr-2" />
+                        <span className="text-sm">Créer des formulaires</span>
+                      </div>
+                      <div className="flex items-center">
+                        <input type="checkbox" className="mr-2" />
+                        <span className="text-sm">
+                          Modifier des formulaires
+                        </span>
+                      </div>
+                      <div className="flex items-center">
+                        <input type="checkbox" className="mr-2" />
+                        <span className="text-sm">
+                          Supprimer des formulaires
+                        </span>
+                      </div>
+                      <div className="flex items-center">
+                        <input type="checkbox" className="mr-2" />
+                        <span className="text-sm">
+                          Déployer des formulaires
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="pl-5">
                     <span className="text-sm">
-                      Créer des formulaires
+                      Permissions sur les données collectées
                     </span>
+                    <div className="flex flex-col pl-5">
+                      <div className="flex items-center">
+                        <input type="checkbox" className="mr-2" />
+                        <span className="text-sm">Lecture seule</span>
+                      </div>
+                      <div className="flex items-center">
+                        <input type="checkbox" className="mr-2" />
+                        <span className="text-sm">
+                          Téléchargement des données
+                        </span>
+                      </div>
+                      <div className="flex items-center">
+                        <input type="checkbox" className="mr-2" />
+                        <span className="text-sm">
+                          Modification/Suppression des données
+                        </span>
+                      </div>
+                      <div className="flex items-center">
+                        <input type="checkbox" className="mr-2" />
+                        <span className="text-sm">
+                          Valider les soummissions
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex items-center">
-                    <input type="checkbox" className="mr-2" />
+                  <div className="pl-5">
+                    <span className="text-sm">Gestion des utilisateurs</span>
+                    <div className="flex flex-col pl-5">
+                      <div className="flex items-center">
+                        <input type="checkbox" className="mr-2" />
+                        <span className="text-sm">
+                          Ajouter ou retirer des agents
+                        </span>
+                      </div>
+                      <div className="flex items-center">
+                        <input type="checkbox" className="mr-2" />
+                        <span className="text-sm">
+                          Modifier les permissions des autres agents
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="pl-5">
                     <span className="text-sm">
-                      Modifier des formulaires
+                      Accès aux paramètres de projet
                     </span>
+                    <div className="flex flex-col pl-5">
+                      <div className="flex items-center">
+                        <input type="checkbox" className="mr-2" />
+                        <span className="text-sm">
+                          Configuration des paramètres de projet
+                        </span>
+                      </div>
+                      <div className="flex items-center">
+                        <input type="checkbox" className="mr-2" />
+                        <span className="text-sm">
+                          Accès aux rapports et analyses avancées
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex items-center">
-                    <input type="checkbox" className="mr-2" />
-                    <span className="text-sm">
-                      Supprimer des formulaires
-                    </span>
-                  </div>
-                  <div className="flex items-center">
-                    <input type="checkbox" className="mr-2" />
-                    <span className="text-sm">
-                     Déployer des formulaires
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div className="pl-5">
-                <span className="text-sm">
-                  Permissions sur les données collectées
-                </span>
-                <div className="flex flex-col pl-5">
-                  <div className="flex items-center">
-                    <input type="checkbox" className="mr-2" />
-                    <span className="text-sm">Lecture seule</span>
-                  </div>
-                  <div className="flex items-center">
-                    <input type="checkbox" className="mr-2" />
-                    <span className="text-sm">Téléchargement des données</span>
-                  </div>
-                  <div className="flex items-center">
-                    <input type="checkbox" className="mr-2" />
-                    <span className="text-sm">
-                      Modification/Suppression des données
-                    </span>
-                  </div>
-                  <div className="flex items-center">
-                    <input type="checkbox" className="mr-2" />
-                    <span className="text-sm">Valider les soummissions</span>
-                  </div>
-                </div>
-              </div>
-              <div className="pl-5">
-                <span className="text-sm">Gestion des utilisateurs</span>
-                <div className="flex flex-col pl-5">
-                  <div className="flex items-center">
-                    <input type="checkbox" className="mr-2" />
-                    <span className="text-sm">
-                      Ajouter ou retirer des agents
-                    </span>
-                  </div>
-                  <div className="flex items-center">
-                    <input type="checkbox" className="mr-2" />
-                    <span className="text-sm">
-                      Modifier les permissions des autres agents
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div className="pl-5">
-                <span className="text-sm">Accès aux paramètres de projet</span>
-                <div className="flex flex-col pl-5">
-                  <div className="flex items-center">
-                    <input type="checkbox" className="mr-2" />
-                    <span className="text-sm">
-                      Configuration des paramètres de projet
-                    </span>
-                  </div>
-                  <div className="flex items-center">
-                    <input type="checkbox" className="mr-2" />
-                    <span className="text-sm">
-                      Accès aux rapports et analyses avancées
-                    </span>
-                  </div>
-                </div>
-              </div>
-              
+                </>
+              )}
             </div>
             <div className="flex items-center justify-evenly mt-6">
-                {/* Buttons */}
-                <button className="px-4 py-2 text-gray-700 bg-white rounded-md hover:bg-gray-200 border-[1px] border-gray-700">
-                  Annuler
-                </button>
-                <button className="px-4 py-2 text-white bg-gray-700 rounded-md hover:bg-gray-800">
-                  Ajouter
-                </button>
-              </div>
+              {/* Buttons */}
+              <button className="px-4 py-2 text-gray-700 bg-white rounded-md hover:bg-gray-200 border-[1px] border-gray-700">
+                Annuler
+              </button>
+              <button className="px-4 py-2 text-white bg-gray-700 rounded-md hover:bg-gray-800">
+                Ajouter
+              </button>
+            </div>
           </div>
-          
         </div>
       )}
     </main>

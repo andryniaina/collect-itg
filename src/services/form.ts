@@ -1,8 +1,11 @@
 import axios from "./axiosInstance";
+import { CreateFormDto } from "../data/dtos/create-form.dto";
 
-export const postForm = async (formData: any) => {
+export const createForm = async (formData: CreateFormDto) => {
   try {
+    console.log("Form Data =>", formData);
     const response = await axios.post(`forms`, formData);
+    console.log("Form Created =>", response.data);
     return response.data
   } catch (error) {
     console.error(error);
