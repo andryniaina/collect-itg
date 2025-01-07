@@ -10,7 +10,7 @@ const AuthenticatedLayout = () => {
   const { isAuthenticated } = useAuth();
 
   useEffect(() => {
-    setShowSidebar(location.pathname !== "/forms/create");
+    setShowSidebar(!location.pathname.startsWith("/forms/builder"));
   }, [location]);
 
   if (!isAuthenticated) return <Navigate to="/login" />;

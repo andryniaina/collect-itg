@@ -9,13 +9,16 @@ import IconCreationFormulaire from "../../../assets/icons/IconCreationFormulaire
 import IconAgents from "../../../assets/icons/IconAgents.svg";
 import { useAuth } from "../../../services/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 
 const Sidebar = () => {
+  const queryClient = useQueryClient();
   const { logout } = useAuth();
   const navigate = useNavigate();
 
   const logoutUser = () => {
     logout();
+    queryClient.invalidateQueries({ queryKey: ["userProfile"] });
     navigate("/login");
   };
   return (
@@ -85,7 +88,7 @@ const Sidebar = () => {
           <img src={IconParams} alt="Settings" className="h-5 w-5" />
           <span className="ml-4">Paramètres</span>
         </Link>
-        <div className="flex items-center p-3 text-gray-700 hover:bg-gray-200 rounded-lg" onClick={logoutUser}>
+        <div className="flex items-center p-3 text-gray-700 hover:bg-gray-200 cursor-pointer rounded-lg" onClick={logoutUser}>
           <img src={IconLogout} alt="Logout" className="h-5 w-5" />
           <span className="ml-4">Déconnexion</span>
         </div>

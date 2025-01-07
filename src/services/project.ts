@@ -13,7 +13,7 @@ export const createProject = async (projectData: CreateProjectDto) => {
   }
 };
 
-export const getProject = async () : Promise<IProject[]> => {
+export const getProjects = async () : Promise<IProject[]> => {
   try {
     const response = await axios.get(`project`);
     console.log("Projects =>",response.data);
@@ -43,7 +43,8 @@ export const deleteProject = async (id: string) => {
 export const findProject = async (id: string) => {
   try {
     const response = await axios.get(`project/${id}`);
-    return response.data;
+    console.log(response.data) ;
+    return response.data; 
   } catch (error) {
     console.error(error);
   }

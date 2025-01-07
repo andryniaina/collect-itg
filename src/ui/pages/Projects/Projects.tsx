@@ -7,7 +7,7 @@ import IconSupprimer from "../../../assets/icons/IconSupprimer.svg";
 import IconModification from "../../../assets/icons/IconModification.svg";
 import IconeFermer from "../../../assets/icons/IconeFermer.svg";
 import IconeArchiver from "../../../assets/icons/IconeArchiver.svg";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { DataGrid, GridColDef, GridRowSelectionModel } from "@mui/x-data-grid";
 import Paper from "@mui/material/Paper";
 import IconNewProject from "../../../assets/icons/IconNewProject.svg";
 import { useProjects } from "../../../hooks/projects";
@@ -17,6 +17,8 @@ import { createProject } from "../../../services/project";
 import { CreateProjectDto } from "../../../data/dtos/create-project.dto";
 import { IProject } from "../../../data/interfaces/project.interface";
 import { useQueryClient } from "@tanstack/react-query";
+import IconClosed from "../../../assets/icons/IconClosed.svg";
+import { useNavigate } from "react-router-dom";
 
 const columns: GridColDef[] = [
   { field: "name", headerName: "Nom du projet", width: 150 },
@@ -68,13 +70,27 @@ function Projects() {
   const { data: projects } = useProjects();
   const { data: userProfile } = useUserProfile();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const [rows, setRows] = useState<ProjectRow[]>([
   ]);
 
+  const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
+  const [selectedRowsIds, setSelectedRowsIds] = useState<string[]>([]);
+
+  const handleRowSelection = (selectionModel: GridRowSelectionModel) => {
+    const selectedId = selectionModel.length > 0 ? selectionModel[0] : null;
+    console.log("Selected ID =>", selectedId);
+    setSelectedRowId(selectedId as string | null);
+    setSelectedRowsIds(selectionModel.map((id) => id as string));
+  };
+
+  const editProject = () => {
+    navigate(`/projects/${selectedRowId}`);
+  }
+
   useEffect(() => {
-    const newRows:ProjectRow[] = projects ? projects?.map((project:IProject)=>
-    {
+    const newRows: ProjectRow[] = projects ? projects?.map((project: IProject) => {
       return {
         id: project._id,
         name: project.name,
@@ -99,11 +115,11 @@ function Projects() {
   const [project, setProject] = useState<CreateProjectDto>({
     name: "",
     description: "",
-    endDate: "",
+    endDate: Date.now().toString(),
     agents: [],
     forms: [],
     responsable: "",
-    region: "",
+    region: "Sud",
     priority: "",
     section: "",
   });
@@ -118,7 +134,7 @@ function Projects() {
   const handleSubmit = async () => {
     await createProject(project);
     closeModal();
-    queryClient.invalidateQueries({queryKey:["projects"]});
+    queryClient.invalidateQueries({ queryKey: ["projects"] });
   };
 
   return (
@@ -169,11 +185,13 @@ function Projects() {
           <div className="flex items-center gap-3">
             <img src={IconeArchiver} alt="Archiver" className="w-5 h-5" />
             <img src={IconSupprimer} alt="Supprimer" className="w-5 h-5" />
-            <img
-              src={IconModification}
-              alt="Modification"
-              className="w-5 h-5"
-            />
+            <button onClick={editProject}>
+              <img
+                src={IconModification}
+                alt="Modification"
+                className="w-5 h-5"
+              />
+            </button>
             <img src={IconeFermer} alt="Fermer" className="w-5 h-5" />
           </div>
         </div>
@@ -187,42 +205,41 @@ function Projects() {
               checkboxSelection
               localeText={localizedTextsMap}
               sx={{ border: 0 }}
+              onRowSelectionModelChange={handleRowSelection}
             />
           </Paper>
         </div>
         {isModalOpen && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-            <div className="bg-white rounded-lg shadow-lg w-96">
+            <div className="bg-white rounded-lg shadow-lg w-[700px]">
               {/* Modal Header */}
-              <div className="flex justify-between items-center px-6 py-4 border-b">
+              <div className="flex justify-center items-center px-6 py-4 mb-7 relative">
                 <h2 className="text-lg font-semibold">Nouveau projet</h2>
                 <button
                   onClick={closeModal}
-                  className="text-gray-600 hover:text-gray-900"
+                  className="text-gray-600 hover:text-gray-900 absolute right-4 top-4"
                 >
-                  &times;
+                  <img src={IconClosed} alt="close" />
                 </button>
               </div>
 
               {/* Modal Tabs */}
-              <div className="flex border-b">
+              <div className="flex border-b w-3/5 pl-5">
                 <button
                   onClick={() => setActiveTab("base")}
-                  className={`flex-1 px-4 py-2 text-center ${
-                    activeTab === "base"
-                      ? "border-b-2 border-blue-600 font-semibold"
+                  className={`flex-1 px-4 py-2 text-center ${activeTab === "base"
+                      ? "border-b-2 border-gray-600 font-semibold"
                       : "text-gray-600"
-                  }`}
+                    }`}
                 >
                   Informations de base
                 </button>
                 <button
                   onClick={() => setActiveTab("advanced")}
-                  className={`flex-1 px-4 py-2 text-center ${
-                    activeTab === "advanced"
-                      ? "border-b-2 border-blue-600 font-semibold"
+                  className={`flex-1 px-4 py-2 text-center ${activeTab === "advanced"
+                      ? "border-b-2 border-gray-600 font-semibold"
                       : "text-gray-600"
-                  }`}
+                    }`}
                 >
                   Options avancées
                 </button>
@@ -285,7 +302,7 @@ function Projects() {
                         Formulaires associés
                       </label>
                       <select className="w-full mt-1 px-3 py-2 border rounded-md" onChange={handleChange} value={project.forms} name="forms">
-                        
+
                       </select>
                     </div>
                     <div>
@@ -293,7 +310,7 @@ function Projects() {
                         Agents {/* <span className="text-red-500">*</span> */}
                       </label>
                       <select className="w-full mt-1 px-3 py-2 border rounded-md" onChange={handleChange} value={project.agents} name="agents">
-                        
+
                       </select>
                     </div>
                   </form>
@@ -339,15 +356,15 @@ function Projects() {
               </div>
 
               {/* Modal Footer */}
-              <div className="flex justify-end px-6 py-4 border-t">
+              <div className="flex justify-center gap-6 px-6 py-4 border-t">
                 <button
                   onClick={closeModal}
-                  className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md mr-2 hover:bg-gray-400"
+                  className="px-6 py-1 border-2 border-gray-400 text-gray-700 rounded-md mr-2 hover:bg-gray-400"
                 >
                   Annuler
                 </button>
-                <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                onClick={handleSubmit}>
+                <button className="px-6 py-1 bg-gray-600 text-white rounded-md hover:bg-gray-700"
+                  onClick={handleSubmit}>
                   Enregistrer
                 </button>
               </div>

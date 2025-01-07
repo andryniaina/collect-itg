@@ -9,6 +9,9 @@ import { LineChart } from "@mui/x-charts/LineChart";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import Paper from "@mui/material/Paper";
 import { useUserProfile } from "../../../hooks/auth";
+import { useProjects } from "../../../hooks/projects";
+import { useEffect, useState } from "react";
+import { IProject } from "../../../data/interfaces/project.interface";
 const dataset = [
   { x: 1, y: 2 },
   { x: 2, y: 5.5 },
@@ -54,52 +57,42 @@ const columns: GridColDef[] = [
   },
 ];
 
-const rows = [
-  {
-    id: "1",
-    name: "Projet 01",
-    region: "Sud",
-    echeance: "01/08/2024",
-    status: "En cours",
-    agentsNumber: 5,
-    forms: 10,
-    advancement: "30%",
-  },
-  {
-    id: "2",
-    name: "Projet 01",
-    region: "Sud",
-    echeance: "01/08/2024",
-    status: "En cours",
-    agentsNumber: 5,
-    forms: 10,
-    advancement: "30%",
-  },
-  {
-    id: "3",
-    name: "Projet 01",
-    region: "Sud",
-    echeance: "01/08/2024",
-    status: "En cours",
-    agentsNumber: 5,
-    forms: 10,
-    advancement: "30%",
-  },
-  {
-    id: "4",
-    name: "Projet 01",
-    region: "Sud",
-    echeance: "01/08/2024",
-    status: "En cours",
-    agentsNumber: 5,
-    forms: 10,
-    advancement: "30%",
-  },
-];
-
 const paginationModel = { page: 0, pageSize: 5 };
+
+interface ProjectRow {
+  id: string;
+  name: string;
+  region: string;
+  echeance: string;
+  status: string;
+  agentsNumber: number;
+  forms: number;
+  advancement: string;
+}
 function Dashboard() {
   const { data: userProfile } = useUserProfile();
+
+  const { data: projects } = useProjects();
+
+  const [rows, setRows] = useState<ProjectRow[]>([
+  ]);
+
+  useEffect(() => {
+    const newRows:ProjectRow[] = projects ? projects?.map((project:IProject)=>
+    {
+      return {
+        id: project._id,
+        name: project.name,
+        region: project.region,
+        echeance: project.endDate,
+        status: project.status,
+        agentsNumber: project.agents.length,
+        forms: project.forms.length,
+        advancement: "30%",
+      }
+    }) : [];
+    setRows(newRows);
+  }, [projects]);
   return (
     <div>
       <div className="flex flex-row justify-between items-center mb-24">

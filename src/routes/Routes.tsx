@@ -23,7 +23,7 @@ const MainRoutes = () => {
         <Route path="/data" element={<Datas />} />
         <Route path="/data/results" element={<Results />} />
         <Route path="/forms" element={<Forms />} />
-        <Route path="/forms/create" element={<FormBuilder />} />
+        <Route path="/forms/builder/:id" element={<FormBuilder />} />
         <Route path="/projects" element={<Projects />} />
         <Route path="/projects/:id" element={<ProjectDetails />} />
       </Route>

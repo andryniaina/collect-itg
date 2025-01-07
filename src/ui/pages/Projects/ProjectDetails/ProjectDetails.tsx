@@ -17,6 +17,10 @@ import IconeFermer from "../../../../assets/icons/IconeFermer.svg";
 import IconeArchiver from "../../../../assets/icons/IconeArchiver.svg";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import Paper from "@mui/material/Paper";
+import {useParams} from "react-router-dom";
+import { useProject } from "../../../../hooks/projects";
+import { useUserProfile } from "../../../../hooks/auth";
+import { useNavigate } from "react-router-dom";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -134,19 +138,27 @@ function CustomTabPanel(props: TabPanelProps) {
 
 const ProjectDetails = () => {
   const [value, setValue] = React.useState(0);
+  const { id } = useParams();
+  const { data: project, isLoading } = useProject(id as string);
+  const { data: userProfile } = useUserProfile();
+  const navigate = useNavigate() ;
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
+
+  const createForm = async () => {
+    navigate(`/forms`, {state: {createForm:true, projectId: id}});
+  };
   return (
     <main className="">
       <div className="flex flex-row justify-between">
-        <h1 className="font-bold">Projet 01</h1>
+        <h1 className="font-bold">{project?.name}</h1>
         <div className="flex flex-row items-center gap-4">
           <img src={Notif} alt="Notification" className="h-5 w-5" />
           <div className="flex flex-row items-center gap-2">
             <img src={Avatar} alt="Avatar" className="h-3 w-3" />
-            <span>Richard</span>
+            <span>{userProfile?.name}</span>
           </div>
         </div>
       </div>
@@ -158,7 +170,7 @@ const ProjectDetails = () => {
         </Tabs>
       </div>
       <CustomTabPanel value={value} index={0}>
-        <div className="flex flex-row items-start border-b-2 pb-8">
+        {isLoading ? <div className="flex justify-center items-center">Loading...</div>:<div className="flex flex-row items-start border-b-2 pb-8">
           <div className="w-2/3">
             <div className="flex flex-col gap-6">
               <div className="flex flex-row">
@@ -166,7 +178,7 @@ const ProjectDetails = () => {
                   <TextField
                     id="standard-read-only-input"
                     label="Statut"
-                    defaultValue="En cours"
+                    defaultValue={project?.status}
                     variant="standard"
                     slotProps={{
                       input: {
@@ -190,7 +202,7 @@ const ProjectDetails = () => {
                   <TextField
                     id="standard-read-only-input"
                     label="Echéance"
-                    defaultValue="01/09/2024"
+                    defaultValue={project?.endDate && new Date(project?.endDate).toLocaleDateString()}
                     variant="standard"
                     slotProps={{
                       input: {
@@ -214,7 +226,7 @@ const ProjectDetails = () => {
                   <TextField
                     id="standard-read-only-input"
                     label="Dernière mise à jour"
-                    defaultValue="10/10/2024"
+                    defaultValue={project?.updatedAt && new Date(project?.updatedAt).toLocaleDateString()}
                     variant="standard"
                     slotProps={{
                       input: {
@@ -266,8 +278,7 @@ const ProjectDetails = () => {
                   label="Description du projet"
                   multiline
                   rows={2}
-                  defaultValue="Ce projet vise à collecter des données sur les terres agricoles
-pour optimiser les ressources en eau."
+                  defaultValue={project?.description}
                   variant="standard"
                   sx={{
                     "& .MuiInput-underline:before": {
@@ -287,7 +298,7 @@ pour optimiser les ressources en eau."
                   fullWidth={true}
                   id="standard-multiline-static"
                   label="Agents assignés"
-                  defaultValue="Groupe 01"
+                  defaultValue={project?.agents.reduce((acc:string, agent:string) => acc + agent + ", ", "")}
                   variant="standard"
                   sx={{
                     "& .MuiInput-underline:before": {
@@ -316,12 +327,13 @@ pour optimiser les ressources en eau."
               <img src={ShareProject} alt="Share project" className="w-5 h-5" />
               <span>Partager le projet</span>
             </div>
-            <div className="flex flex-row gap-4 items-center">
+            <button className="flex flex-row gap-4 items-center" onClick={createForm}>
               <img src={CreateFrom} alt="Create form" className="w-5 h-5" />
               <span>Créer un formulaire</span>
-            </div>
+            </button>
           </div>
-        </div>
+        </div>}
+        
       </CustomTabPanel>
       <CustomTabPanel value={value} index={1}>
         <div className="flex flex-col gap-10">

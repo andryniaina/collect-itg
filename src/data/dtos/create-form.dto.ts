@@ -7,4 +7,5 @@ export interface CreateFormDto {
   country: string;
   header?: string;
   logo?: string;
+  project?: string;
 }

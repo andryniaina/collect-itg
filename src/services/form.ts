@@ -1,5 +1,7 @@
 import axios from "./axiosInstance";
 import { CreateFormDto } from "../data/dtos/create-form.dto";
+import { UpdateFieldsDto } from "../data/dtos/update-fields.dto";
+import { DeleteFormsDto } from "../data/dtos/detele-forms.dto";
 
 export const createForm = async (formData: CreateFormDto) => {
   try {
@@ -31,7 +33,15 @@ export const deleteForm = async(formId: string) => {
   }
 }
 
-export const updateForm = async(id: string, updateDto: any) => {
+export const deleteForms = async(data: DeleteFormsDto) => {
+  try {
+    await axios.post(`forms/delete`, data) ;
+  } catch(error) {
+    console.error(error) ;
+  }
+}
+
+export const updateFields = async(id: string, updateDto: UpdateFieldsDto) => {
   try {
     await axios.put(`forms/${id}`,updateDto) ;
   } catch(error) {

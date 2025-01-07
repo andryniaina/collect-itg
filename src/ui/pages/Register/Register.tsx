@@ -1,6 +1,11 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { register } from "../../../services/user";
+import PC from "../../../assets/icons/PC.svg";
+import Sécurité from "../../../assets/icons/Sécurité.svg";
+import Traçabilité from "../../../assets/icons/Traçabilité.svg";
+import Support from "../../../assets/icons/Support.svg";
+import IconeEyes from "../../../assets/icons/IconeEyes.svg";
 
 export default function Register() {
   const [showPassword, setShowPassword] = useState(false)
@@ -26,47 +31,47 @@ export default function Register() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-6xl">
-        <div className="flex flex-col lg:flex-row">
+      <div className= "p-8 w-full max-w-6xl">
+        <div className="flex flex-col lg:flex-row gap-36">
           {/* Left Column - Features */}
           <div className="lg:w-1/2 lg:pr-12">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-6">
+            <h2 className="text-xl font-semibold text-gray-800 mb-6 max-w-96">
               Rejoignez une plateforme conçue pour vous aider à suivre vos données et vos projets en toute simplicité.
             </h2>
 
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-2 gap-6 mt-12">
               {/* Security Feature */}
-              <div className="bg-gray-100 p-4 rounded-lg">
-                <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center mb-4">
+              <div className="shadow-md p-4 rounded-lg flex flex-col items-center justify-center">
+                <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-4">
                   {/* Placeholder for icon */}
-                  <div className="w-6 h-6 bg-gray-300 rounded-full"></div>
+                  <img src={Sécurité} alt="Sécurité" />
                 </div>
                 <p className="text-sm text-gray-600">Sécurité des données</p>
               </div>
 
               {/* Traceability Feature */}
-              <div className="bg-gray-100 p-4 rounded-lg">
-                <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center mb-4">
+              <div className="shadow-md p-4 rounded-lg flex flex-col items-center justify-center">
+                <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-4">
                   {/* Placeholder for icon */}
-                  <div className="w-6 h-6 bg-gray-300 rounded-full"></div>
+                  <img src={Traçabilité} alt="Traçabilité" />
                 </div>
                 <p className="text-sm text-gray-600">Traçabilité simplifiée</p>
               </div>
 
               {/* Accessibility Feature */}
-              <div className="bg-gray-100 p-4 rounded-lg">
-                <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center mb-4">
+              <div className="shadow-md p-4 rounded-lg flex flex-col items-center justify-center">
+                <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-4">
                   {/* Placeholder for icon */}
-                  <div className="w-6 h-6 bg-gray-300 rounded-full"></div>
+                  <img src={PC} alt="PC" />
                 </div>
                 <p className="text-sm text-gray-600">Accessibilité</p>
               </div>
 
               {/* Support Feature */}
-              <div className="bg-gray-100 p-4 rounded-lg">
-                <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center mb-4">
+              <div className="shadow-md p-4 rounded-lg flex flex-col items-center justify-center">
+                <div className="w-12 h-12rounded-lg flex items-center justify-center mb-4">
                   {/* Placeholder for icon */}
-                  <div className="w-6 h-6 bg-gray-300 rounded-full"></div>
+                  <img src={Support} alt="Support" />
                 </div>
                 <p className="text-sm text-gray-600">Support personnalisé</p>
               </div>
@@ -74,9 +79,9 @@ export default function Register() {
           </div>
 
           {/* Right Column - Form */}
-          <div className="lg:w-1/2 mt-8 lg:mt-0">
-            <h1 className="text-2xl font-semibold text-gray-800 mb-6">Créer un compte</h1>
-            <div className="space-y-4">
+          <div className="lg:w-1/2 mt-8 lg:mt-0 shadow-md p-8 pt-0 rounded-lg">
+            <h1 className="text-3xl font-semibold text-gray-800 mb-6">Créer un compte</h1>
+            <div className="flex flex-col gap-6">
               {/* Full Name */}
               <div>
                 <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-1">
@@ -85,7 +90,7 @@ export default function Register() {
                 <input
                   type="text"
                   id="fullName"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full py-2 border-b-2 border-gray-300 focus:outline-none"
                   placeholder="Rakoto Nirina"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -100,7 +105,7 @@ export default function Register() {
                 <input
                   type="email"
                   id="email"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full py-2 border-b-2 border-gray-300 focus:outline-none"
                   placeholder="rakotonirina@gmail.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -116,7 +121,7 @@ export default function Register() {
                 <input
                   type="tel"
                   id="phone"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full py-2 border-b-2 border-gray-300 focus:outline-none"
                   placeholder="+261"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
@@ -132,7 +137,7 @@ export default function Register() {
                   <input
                     type={showPassword ? 'text' : 'password'}
                     id="password"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full py-2 border-b-2 border-gray-300 focus:outline-none"
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -144,13 +149,13 @@ export default function Register() {
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
                   >
                     {/* Placeholder for eye icon */}
-                    <div className="w-4 h-4 bg-gray-300 rounded-full"></div>
+                    <img src={IconeEyes} alt="IconeEyes" />
                   </button>
                 </div>
               </div>
 
               {/* Confirm Password */}
-              <div>
+              <div className="mb-7">
                 <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
                   Confirmer mot de passe
                 </label>
@@ -158,7 +163,7 @@ export default function Register() {
                   <input
                     type={showConfirmPassword ? 'text' : 'password'}
                     id="confirmPassword"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full py-2 border-b-2 border-gray-300 focus:outline-none"
                     placeholder="••••••••"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
@@ -170,7 +175,7 @@ export default function Register() {
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
                   >
                     {/* Placeholder for eye icon */}
-                    <div className="w-4 h-4 bg-gray-300 rounded-full"></div>
+                    <img src={IconeEyes} alt="IconeEyes" />
                   </button>
                 </div>
               </div>
@@ -187,7 +192,7 @@ export default function Register() {
               {/* Login Link */}
               <p className="text-center text-sm text-gray-600">
                 Déjà un compte?{' '}
-                <Link to="/login" className="text-blue-600 hover:underline">
+                <Link to="/login" className="underline">
                   Connectez-vous
                 </Link>
                 .

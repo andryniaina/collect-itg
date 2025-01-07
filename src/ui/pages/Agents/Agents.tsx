@@ -10,11 +10,14 @@ import IconeArchiver from "../../../assets/icons/IconeArchiver.svg";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import Paper from "@mui/material/Paper";
 import IconNewProject from "../../../assets/icons/IconNewProject.svg";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAgents } from "../../../hooks/agents";
 import { useUserProfile } from "../../../hooks/auth";
 import { useProjects } from "../../../hooks/projects";
 import { IProject } from "../../../data/interfaces/project.interface";
+import { CreateAgentDto } from "../../../data/dtos/create-agent.dto";
+import IconClosed from "../../../assets/icons/IconClosed.svg"
+import { createAgent } from "../../../services/user";
 
 const columns: GridColDef[] = [
   { field: "name", headerName: "Nom de l'agent", width: 150 },
@@ -42,59 +45,6 @@ const columns: GridColDef[] = [
   },
 ];
 
-const rows = [
-  {
-    id: "1",
-    name: "RAKOTO Richard",
-    role: "Enqueteur",
-    group: "01/08/2024",
-    status: "En cours",
-    project: 5,
-    lastMission: 10,
-    completion: "30%",
-  },
-  {
-    id: "2",
-    name: "RAKOTO Richard",
-    role: "Enqueteur",
-    group: "01/08/2024",
-    status: "En cours",
-    project: 5,
-    lastMission: 10,
-    completion: "30%",
-  },
-  {
-    id: "3",
-    name: "RAKOTO Richard",
-    role: "Enqueteur",
-    group: "01/08/2024",
-    status: "En cours",
-    project: 5,
-    lastMission: 10,
-    completion: "30%",
-  },
-  {
-    id: "4",
-    name: "RAKOTO Richard",
-    role: "Enqueteur",
-    group: "01/08/2024",
-    status: "En cours",
-    project: 5,
-    lastMission: 10,
-    completion: "30%",
-  },
-  {
-    id: "5",
-    name: "RAKOTO Richard",
-    role: "Enqueteur",
-    group: "01/08/2024",
-    status: "En cours",
-    project: 5,
-    lastMission: 10,
-    completion: "30%",
-  },
-];
-
 const localizedTextsMap = {
   footerRowSelected: (count: number) =>
     count !== 1
@@ -104,12 +54,53 @@ const localizedTextsMap = {
 
 const paginationModel = { page: 0, pageSize: 5 };
 
+interface AgentRow {
+  id: string;
+  name: string;
+  role: string;
+  group: string;
+  status: string;
+  project: string;
+  lastMission: string;
+  completion: string;
+}
+
 function Agents() {
   const { data: agents } = useAgents();
   const {data: projects} = useProjects();
   const { data: userProfile } = useUserProfile();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [customAuth, setCustomAuth] = useState(false);
+  const [agentData, setAgentData] = useState<CreateAgentDto>({
+    name: "",
+    email: "",
+    password: "123456",
+    role: "Collaborateur",
+    description: "",
+    project: "",
+  });
+
+  const [rows, setRows] = useState<AgentRow[]>([]);
+
+  useEffect(() => {
+    if (projects && projects.length > 0) {
+      setAgentData({ ...agentData, project: projects[0]._id });
+    }
+  }, [projects]);
+
+  useEffect(() => {
+    const newRows: AgentRow[] = agents ? agents?.map((agent: any) => ({
+      id: agent._id,
+      name: agent.name,
+      role: agent.role,
+      group: "Aucun",
+      status: "Actif",
+      project: agent.project,
+      lastMission: "10/10/2024",
+      completion: "30%",
+    })) : [];
+    setRows(newRows);
+  }, [agents]);
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -117,6 +108,11 @@ function Agents() {
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
+  };
+
+  const saveAgent = async () => {
+    await createAgent(agentData);
+    handleCloseModal();
   };
 
   return (
@@ -192,7 +188,7 @@ function Agents() {
             <div className="flex justify-between mb-12">
               <span className="font-semibold">Ajouter un agent</span>
               <span className="hover:cursor-pointer" onClick={handleCloseModal}>
-                X
+                <img src={IconClosed} alt="close" />
               </span>
             </div>
 
@@ -203,8 +199,10 @@ function Agents() {
                 </label>
                 <input
                   type="text"
-                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-gray-500"
                   placeholder="Nom"
+                  value={agentData.name}
+                  onChange={(e) => setAgentData({...agentData, name: e.target.value})}
                 />
               </div>
               <div className="mb-4">
@@ -213,17 +211,19 @@ function Agents() {
                 </label>
                 <input
                   type="text"
-                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-gray-500"
                   placeholder="Email"
+                  value={agentData.email}
+                  onChange={(e) => setAgentData({...agentData, email: e.target.value})}
                 />
               </div>
               <div className="mb-4">
                 <label className="block mb-2 text-gray-700">
                   Projet(s) assigné(s) <span className="text-red-500">*</span>
                 </label>
-                <select className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500">
+                <select className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-gray-500" value={agentData.project} onChange={(e) => setAgentData({...agentData, project: e.target.value})}>
                   {projects?.map((project:IProject)=>
-                    <option key={project._id}>{project.name}</option>
+                    <option key={project._id} value={project._id}>{project.name}</option>
                   )}
                 </select>
               </div>
@@ -231,9 +231,8 @@ function Agents() {
                 <label className="block mb-2 text-gray-700">
                   Role de l'agent: <span className="text-red-500">*</span>
                 </label>
-                <select className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500">
+                <select className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-gray-500" value={agentData.role} onChange={(e) => setAgentData({...agentData, role: e.target.value})}>
                   <option>Collaborateur</option>
-                  <option>Administrateur</option>
                   <option>Enqueteur</option>
                 </select>
               </div>
@@ -242,8 +241,10 @@ function Agents() {
                   Description du role:
                 </label>
                 <textarea
-                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-gray-500"
                   placeholder=""
+                  value={agentData.description}
+                  onChange={(e) => setAgentData({...agentData, description: e.target.value})}
                 ></textarea>
               </div>
               <div className="flex items-center">
@@ -354,10 +355,10 @@ function Agents() {
             </div>
             <div className="flex items-center justify-evenly mt-6">
               {/* Buttons */}
-              <button className="px-4 py-2 text-gray-700 bg-white rounded-md hover:bg-gray-200 border-[1px] border-gray-700">
+              <button className="px-4 py-2 text-gray-700 bg-white rounded-md hover:bg-gray-200 border-[1px] border-gray-700" onClick={handleCloseModal}>
                 Annuler
               </button>
-              <button className="px-4 py-2 text-white bg-gray-700 rounded-md hover:bg-gray-800">
+              <button className="px-4 py-2 text-white bg-gray-700 rounded-md hover:bg-gray-800" onClick={saveAgent}>
                 Ajouter
               </button>
             </div>

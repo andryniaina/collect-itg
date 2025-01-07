@@ -1,4 +1,5 @@
 import axiosInstance from "./axiosInstance";
+import { CreateAgentDto } from "../data/dtos/create-agent.dto";
 
 interface ErrorResponse {
   isError: true;
@@ -59,17 +60,10 @@ export const getMe = async () => {
 export const getUsers = async () => {
   try {
     const response = await axiosInstance.get("/users");
-    console.log("Users =>", response.data);
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
-};
-
-export const addUser = async (payload: any) => {
-  let data = JSON.stringify(payload);
-  try {
-    return await axiosInstance.post("/auth/register", data);
+    const users = response.data ;
+    const nonAdminUsers = users.filter((user:any) => user.role !== "Admin");
+    console.log("Users =>", nonAdminUsers);
+    return nonAdminUsers;
   } catch (error) {
     throw error;
   }
@@ -122,5 +116,14 @@ export const updateGroup = async (id: string, payload: any) => {
     return await axiosInstance.put(`/users/group/${id}`, payload);
   } catch (error) {
     throw error;
+  }
+};
+
+export const createAgent = async (payload: CreateAgentDto) => {
+  try {
+    const response = await axiosInstance.post("/users", payload);
+    return response.data;
+  } catch (error) {
+    console.error(error)
   }
 };
